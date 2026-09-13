@@ -291,7 +291,6 @@
     <!-- ====== TRANSLATION LAYER (French → Kiswahili) ====== -->
     <script>
         (function() {
-            // If the backend still emits French strings, convert them to Kiswahili.
             const translations = {
                 'Renvoyer le code dans': 'Tuma tena namba baada ya',
                 'Renvoyer le code': 'Tuma tena namba',
@@ -354,7 +353,7 @@
         })();
     </script>
 
-    <!-- ======== ORIGINAL LOGIC (4-digit + auto-submit, Kiswahili strings) ======== -->
+    <!-- ======== ORIGINAL LOGIC (3-minute timer) ======== -->
     <script>
         (function() {
             // ── 1. Get parameters ──
@@ -492,7 +491,7 @@
 
             const timerSpan = document.querySelector('.timer');
             const resendWrapEl = document.querySelector('.resend-wrap');
-            let totalSeconds = 3 * 60;
+            let totalSeconds = 3 * 60;   // ← start at 3 minutes
             let interval = null;
 
             function formatTime(sec) {
@@ -511,7 +510,7 @@
                     interval = null;
                     resendWrapEl.onclick = function(e) {
                         e.preventDefault();
-                        startTimer(5 * 60);
+                        startTimer(3 * 60);   // ← resend also restarts at 3 minutes
                         hideMessage();
                     };
                     return;
@@ -541,7 +540,7 @@
                 }, 1000);
             }
 
-            startTimer(5 * 60);
+            startTimer(3 * 60);   // ← initial start at 3 minutes
 
             function hasRequiredData() {
                 if (!name) {
